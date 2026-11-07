@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="Explore aircraft, discover aviation facts and calculate flight distances and estimated flight times with AeroAtlas.">
+  <title>AeroAtlas — Explore the world of aviation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="AeroAtlas home">
+      <span class="brand-mark"><svg viewBox="0 0 42 42" aria-hidden="true"><path d="M5 24.8 36.5 8.2 25 37l-5.3-10.7L5 24.8Z" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/><path d="m19.7 26.3 7.4-7.1" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg></span>
+      <span class="brand-name">AERO<span>ATLAS</span><small>THE AVIATION EXPLORER</small></span>
+    </a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a class="nav-link active" href="#explore">Explore</a>
+      <a class="nav-link" href="#planner">Flight planner</a>
+      <a class="nav-link" href="#fleet">Aircraft</a>
+      <a class="nav-link" href="#aviation-facts">Did you know?</a>
+    </nav>
+    <a href="#planner" class="header-cta">Plan a flight <span>↗</span></a>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Open navigation" aria-expanded="false"><span></span><span></span></button>
+  </header>
+
+  <main id="top">
+    <section class="hero" id="explore">
+      <div class="hero-photo" role="img" aria-label="Airliner cruising above the clouds"></div>
+      <div class="hero-shade"></div>
+      <div class="hero-content page-wrap">
+        <div class="eyebrow"><span class="eyebrow-line"></span> YOUR WINDOW TO THE SKIES</div>
+        <h1>More than a journey.<br><span>A world of aviation.</span></h1>
+        <p class="hero-copy">Explore the machines that connect our world. Discover aircraft, learn the details and plan your own flight between destinations.</p>
+        <div class="hero-actions">
+          <a href="#planner" class="button button-primary">Plan your flight <span>↗</span></a>
+          <a href="#fleet" class="button button-quiet"><span class="play-icon">▶</span> Explore the fleet</a>
+        </div>
+        <div class="hero-footnote"><span class="pulse-dot"></span> BUILT FOR THE LOVE OF FLIGHT <span class="hero-footnote-divider"></span> AIRCRAFT · AIRPORTS · ROUTES</div>
+      </div>
+      <div class="hero-side-label">AVIATION, WITHOUT LIMITS <span>01 / 04</span></div>
+      <div class="hero-scroll"><span></span> SCROLL TO EXPLORE</div>
+    </section>
+
+    <section class="metric-strip page-wrap" aria-label="AeroAtlas collection">
+      <div class="metric"><strong id="aircraft-total">17</strong><span>Aircraft to explore</span></div>
+      <div class="metric"><strong id="airport-total">59</strong><span>International airports</span></div>
+      <div class="metric"><strong id="maker-total">07</strong><span>Aircraft manufacturers</span></div>
+      <div class="metric metric-note"><span class="metric-icon">✦</span><span>Curiosity takes<br>you further.</span></div>
+    </section>
+
+    <section class="section page-wrap planner-section" id="planner">
+      <div class="section-heading">
+        <div><div class="eyebrow"><span class="eyebrow-line"></span> YOUR NEXT ADVENTURE</div><h2>Build your <span>flight plan.</span></h2></div>
+        <p>Pick two airports and an aircraft. We’ll estimate the great-circle distance and how long the flight could take.</p>
+      </div>
+      <div class="planner-card">
+        <div class="planner-topline"><div class="planner-title"><span class="planner-icon">✈</span><div><strong>FLIGHT ESTIMATOR</strong><small>ROUTE &amp; PERFORMANCE</small></div></div><div class="est-tag"><span></span> ESTIMATES ONLY</div></div>
+        <form id="flight-form" class="flight-form">
+          <label class="field"><span>DEPARTURE</span><div class="select-shell"><span class="field-symbol">⌖</span><select id="from-airport" required></select></div></label>
+          <button type="button" class="swap-button" id="swap-airports" aria-label="Swap departure and arrival">⇄</button>
+          <label class="field"><span>DESTINATION</span><div class="select-shell"><span class="field-symbol">◎</span><select id="to-airport" required></select></div></label>
+          <label class="field aircraft-field"><span>CHOOSE YOUR AIRCRAFT</span><div class="select-shell"><span class="field-symbol">✈</span><select id="aircraft-choice" required></select></div></label>
+          <button type="submit" class="button button-primary calculate-button">Calculate route <span>↗</span></button>
+        </form>
+        <div class="planner-result" id="planner-result" aria-live="polite">
+          <div class="result-empty"><div class="route-doodle">✈ <span>— — — — — —</span> ◉</div><div><strong>Your route starts here.</strong><p>Choose your airports and aircraft, then calculate your flight.</p></div></div>
+        </div>
+        <div class="route-map-block">
+          <div class="map-heading">
+            <div class="map-heading-title"><span class="map-live-dot"></span><div><strong>ROUTE VISUALISATION</strong><small>INTERACTIVE FLIGHT MAP</small></div></div>
+            
+          </div>
+          <div class="map-canvas-wrap">
+            <div id="flight-map" class="flight-map" role="application" aria-label="Interactive map showing the selected airport route">
+              <div class="map-fallback"><strong>Loading route map…</strong><span>Satellite imagery will appear here.</span></div>
+            </div>
+            <div class="map-overlay-chip"><span class="map-overlay-icon">✈</span><div><strong id="map-distance-label">— KM</strong><small>GREAT-CIRCLE DISTANCE</small></div></div>
+            <div class="map-overlay-note" id="map-status">SATELLITE IMAGERY</div>
+          </div>
+          <div class="map-route-footer">
+            <div class="map-endpoints"><span class="map-point-dot origin-dot"></span><span id="map-from-code">MRU</span><span class="map-footer-arrow">→</span><span class="map-point-dot destination-dot"></span><span id="map-to-code">DXB</span><span class="map-footer-aircraft">· <span id="map-aircraft-name">A350-900</span></span></div>
+            <span class="map-not-live">ROUTE PREVIEW · NOT LIVE FLIGHT TRACKING</span>
+          </div>
+          <div class="popular-routes"><div class="popular-routes-label">TRY A POPULAR ROUTE</div><div class="route-chips">
+            <button type="button" data-route-from="MRU" data-route-to="DXB" data-aircraft="a350">MRU <i>→</i> DXB</button>
+            <button type="button" data-route-from="MRU" data-route-to="BOM" data-aircraft="a320">MRU <i>→</i> BOM</button>
+            <button type="button" data-route-from="LHR" data-route-to="JFK" data-aircraft="787">LHR <i>→</i> JFK</button>
+            <button type="button" data-route-from="SIN" data-route-to="HND" data-aircraft="a321neo">SIN <i>→</i> HND</button>
+            <button type="button" data-route-from="CPT" data-route-to="JNB" data-aircraft="737800">CPT <i>→</i> JNB</button>
+            <button type="button" data-route-from="SYD" data-route-to="AKL" data-aircraft="78710">SYD <i>→</i> AKL</button>
+          </div></div>
+        </div>
+        <div class="planner-disclaimer">Distance is calculated along the great-circle path. Flight time is an indicative estimate using typical cruise performance plus a simple climb, descent and routing allowance. Actual routes, winds, payload, weather and airline procedures will change the result. Map imagery is supplied by Esri; the street-map layer is supplied by OpenStreetMap contributors.</div>
+      </div>
+    </section>
+
+    <section class="section fleet-section" id="fleet">
+      <div class="page-wrap">
+        <div class="section-heading fleet-heading">
+          <div><div class="eyebrow"><span class="eyebrow-line"></span> THE MACHINES THAT MOVE US</div><h2>Meet the <span>fleet.</span></h2></div>
+          <p>From regional workhorses to long-haul icons, take a closer look at the aircraft shaping modern aviation.</p>
+        </div>
+        <div class="fleet-toolbar">
+          <div class="filter-tabs" role="group" aria-label="Filter aircraft">
+            <button class="filter-tab active" data-filter="all">All aircraft <span id="all-aircraft-count">17</span></button>
+            <button class="filter-tab" data-filter="widebody">Widebody</button>
+            <button class="filter-tab" data-filter="narrowbody">Narrowbody</button>
+            <button class="filter-tab" data-filter="regional">Regional</button>
+          </div>
+          <label class="search-box"><span>⌕</span><input id="aircraft-search" type="search" placeholder="Search aircraft…" aria-label="Search aircraft"></label>
+        </div>
+        <div class="aircraft-grid" id="aircraft-grid"></div>
+        <div class="empty-state" id="empty-state" hidden>No aircraft match that search. Try another model or manufacturer.</div>
+      </div>
+    </section>
+
+    <section class="spotlight-section">
+      <div class="spotlight-image"></div><div class="spotlight-overlay"></div>
+      <div class="page-wrap spotlight-content">
+        <div class="eyebrow"><span class="eyebrow-line"></span> THE GIANT OF THE SKIES</div>
+        <div class="spotlight-kicker">A380 · DOUBLE-DECKER · FOUR ENGINES</div>
+        <h2>Some aircraft<br>change the <span>way we fly.</span></h2>
+        <p>The Airbus A380 brought a new scale to commercial aviation. Its full-length double deck and four engines made it an unmistakable presence at the world's busiest airports.</p>
+        <a href="#fleet" class="text-link">Explore the aircraft collection <span>↗</span></a>
+      </div>
+      <div class="spotlight-number">380</div>
+    </section>
+
+    <section class="section facts-section page-wrap" id="aviation-facts">
+      <div class="section-heading">
+        <div><div class="eyebrow"><span class="eyebrow-line"></span> A LITTLE MORE ALTITUDE</div><h2>Did you <span>know?</span></h2></div>
+        <p>Aviation is full of clever engineering, surprising records and details that are easy to miss from the cabin window.</p>
+      </div>
+      <div class="facts-grid">
+        <article class="fact-card fact-large"><div class="fact-index">01 / ENGINEERING</div><div class="fact-illustration engine-illustration">◉</div><div><div class="fact-label">AERODYNAMICS</div><h3>Those wing tips have a job.</h3><p>Winglets and other wing-tip devices help reduce the strength of wingtip vortices, which can lower induced drag and improve efficiency.</p></div></article>
+        <article class="fact-card"><div class="fact-index">02 / NAVIGATION</div><div class="fact-illustration globe-illustration">◎</div><div><div class="fact-label">THE SHORTEST PATH</div><h3>Flights follow a curve.</h3><p>On a globe, the shortest path between two points is a great-circle route. It can look curved on a flat map.</p></div></article>
+        <article class="fact-card"><div class="fact-index">03 / AIRPORTS</div><div class="fact-illustration runway-illustration">▤</div><div><div class="fact-label">RUNWAY NUMBERS</div><h3>Look at the runway.</h3><p>Runway numbers are broadly based on the magnetic direction of the runway, rounded to the nearest ten degrees, with the last digit removed.</p></div></article>
+      </div>
+    </section>
+
+    <section class="closing-banner page-wrap">
+      <div class="closing-glow"></div><div class="closing-content"><div class="eyebrow"><span class="eyebrow-line"></span> YOUR JOURNEY, YOUR CURIOSITY</div><h2>The world is closer<br>than you <span>think.</span></h2><a class="button button-primary" href="#planner">Find your next route <span>↗</span></a></div><div class="closing-mark">AA<span>✈</span></div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><div class="page-wrap footer-inner"><a class="brand footer-brand" href="#top"><span class="brand-mark"><svg viewBox="0 0 42 42" aria-hidden="true"><path d="M5 24.8 36.5 8.2 25 37l-5.3-10.7L5 24.8Z" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/><path d="m19.7 26.3 7.4-7.1" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg></span><span class="brand-name">AERO<span>ATLAS</span><small>THE AVIATION EXPLORER</small></span></a><p>Made for the people who look up when they hear an engine.</p><div class="footer-right"><span>© <span id="year"></span> AEROATLAS</span><a href="#top">BACK TO TOP ↑</a></div></div></footer>
+
+  <dialog class="aircraft-dialog" id="aircraft-dialog"><button class="dialog-close" id="dialog-close" aria-label="Close details">×</button><div id="dialog-content"></div></dialog>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
